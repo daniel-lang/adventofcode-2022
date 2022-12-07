@@ -4,7 +4,7 @@ DAY=$1
 
 mkdir -p $DAY/input
 touch $DAY/input/example.txt
-touch $DAY/input/input.txt
+aoc download --input-only --input-file $DAY/input/input.txt
 
 cp template.cpp $DAY/first.cpp
 cp template.cpp $DAY/second.cpp
