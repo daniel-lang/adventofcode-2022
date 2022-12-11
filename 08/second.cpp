@@ -47,7 +47,7 @@ unsigned int checkGridVisibility(unsigned int x1, unsigned int y1, unsigned int 
     return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int, char *argv[])
 {
     std::ifstream input(argv[1]);
 
@@ -58,15 +58,15 @@ int main(int argc, char *argv[])
     {
         std::vector<uint8_t> tmp;
 
-        for (int j = 0; j < line.size(); ++j)
+        for (size_t j = 0; j < line.size(); ++j)
             tmp.push_back(line.at(j));
 
         grid.push_back(tmp);
     }
 
-    for (int i = 1; i < grid.size() - 1; ++i)
+    for (size_t i = 1; i < grid.size() - 1; ++i)
     {
-        for (unsigned int j = 1; j < grid[0].size() - 1; ++j)
+        for (size_t j = 1; j < grid[0].size() - 1; ++j)
         {
             std::cout << "checking " << j << ":" << i << " (" << grid[i][j] << ") ";
             unsigned int scene = checkGridVisibility(j, i, j, i, up) * checkGridVisibility(j, i, j, i, down) * checkGridVisibility(j, i, j, i, left) * checkGridVisibility(j, i, j, i, right);

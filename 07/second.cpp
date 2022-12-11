@@ -29,14 +29,13 @@ unsigned int getFolderSize(std::string path, std::vector<entry> entries)
     return size;
 }
 
-int main(int argc, char *argv[])
+int main(int, char *argv[])
 {
     std::ifstream input(argv[1]);
 
     std::string line;
     std::vector<std::string> dirs;
     std::string currentPath = "";
-    unsigned int count = 0;
 
     while (std::getline(input, line))
     {

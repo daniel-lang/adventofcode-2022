@@ -4,7 +4,7 @@
 #include <cstring>
 #include <algorithm>
 
-int main(int argc, char *argv[])
+int main(int, char *argv[])
 {
     std::ifstream input(argv[1]);
 

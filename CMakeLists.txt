@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 project(advent-of-code VERSION 1.0 LANGUAGES CXX)
 
+add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+
 # day 01
 add_executable(01_first 01/first.cpp)
 add_executable(01_second 01/second.cpp)

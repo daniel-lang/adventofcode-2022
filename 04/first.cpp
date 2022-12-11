@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 
-int main(int argc, char *argv[])
+int main(int, char *argv[])
 {
     FILE *fp = fopen(argv[1], "r");
 

@@ -5,12 +5,11 @@
 #include <deque>
 #include <vector>
 
-int main(int argc, char *argv[])
+int main(int, char *argv[])
 {
     std::ifstream input(argv[1]);
 
     std::string line;
-    unsigned int count = 0;
     int stackCount = atoi(argv[2]);
     std::vector<std::deque<char>> stacks(stackCount);
 
@@ -19,7 +18,7 @@ int main(int argc, char *argv[])
         // cranes
         if (line.find('[') != std::string::npos)
         {
-            int offset = 0;
+            size_t offset = 0;
             while ((offset = line.find('[', offset)) != std::string::npos)
             {
                 stacks[offset / 4].push_back(line.at(offset + 1));
