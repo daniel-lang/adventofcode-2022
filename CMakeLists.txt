@@ -31,3 +31,6 @@ add_executable(08_second 08/second.cpp)
 # day 11
 add_executable(11_first 11/first.cpp)
 add_executable(11_second 11/second.cpp)
+# day 12
+add_executable(12_first 12/first.cpp)
+add_executable(12_second 12/second.cpp)
