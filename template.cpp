@@ -9,9 +9,11 @@ int main(int, char *argv[])
     std::string line;
     unsigned int count = 0;
 
-    while (input >> line)
+    while (std::getline(input, line))
     {
     }
+
+    std::cout << count << std::endl;
 
     return 0;
 }
