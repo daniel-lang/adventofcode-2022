@@ -17,13 +17,6 @@ struct form
     int width;
 };
 
-enum class content
-{
-    AIR,
-    ROCK,
-    ROCK_FALLING
-};
-
 std::vector<point> pointsForm1 = {
     {0, 0},
     {1, 0},
@@ -71,7 +64,7 @@ std::array<form, 5> forms = {form1, form2, form3, form4, form5};
 int maxY = 0;
 form currentForm;
 point currentFormPosition;
-std::unordered_map<std::string, content> grid;
+std::vector<uint8_t> grid;
 std::vector<int> gases;
 
 std::string pointToString(point p)
@@ -86,24 +79,26 @@ void print()
     for (int y = height - 1; y >= 0; y--)
     {
         std::cout << "|";
+        uint8_t row = 0;
+        if (y < static_cast<int>(grid.size()))
+            row = grid[y];
 
         for (int x = 0; x < 7; x++)
         {
-            std::string coord = pointToString({x, y});
-            content c = content::AIR;
-            if (grid.count(coord) == 1)
-                c = grid.at(coord);
-
-            for (auto const &p : currentForm.points)
-                if (currentFormPosition.x + p.x == x && currentFormPosition.y + p.y == y)
-                    c = content::ROCK_FALLING;
-
-            if (c == content::ROCK)
+            if (row & (1 << x))
                 std::cout << "#";
-            else if (c == content::ROCK_FALLING)
-                std::cout << "@";
             else
-                std::cout << ".";
+            {
+                bool falling = false;
+                for (auto const &p : currentForm.points)
+                    if (currentFormPosition.x + p.x == x && currentFormPosition.y + p.y == y)
+                        falling = true;
+
+                if (falling)
+                    std::cout << "@";
+                else
+                    std::cout << ".";
+            }
         }
 
         std::cout << "|\n";
@@ -140,8 +135,9 @@ int main(int, char *argv[])
         for (auto const &p : currentForm.points)
         {
             auto newX = currentFormPosition.x + p.x + gases[gas];
-            auto coord = pointToString({newX, currentFormPosition.y + p.y});
-            if (newX < 0 || newX > 6 || (grid.count(coord) == 1 && grid.at(coord) != content::AIR))
+            auto mask = 1 << newX;
+            auto y = currentFormPosition.y + p.y;
+            if (newX < 0 || newX > 6 || (y < static_cast<int>(grid.size()) && grid[y] & mask))
             {
                 gasPossible = false;
                 break;
@@ -155,8 +151,8 @@ int main(int, char *argv[])
         for (auto const &p : currentForm.points)
         {
             auto newY = currentFormPosition.y + p.y - 1;
-            auto coord = pointToString({currentFormPosition.x + p.x, newY});
-            if (newY < 0 || (grid.count(coord) == 1 && grid.at(coord) != content::AIR))
+            auto mask = 1 << (currentFormPosition.x + p.x);
+            if (newY < 0 || (newY < static_cast<int>(grid.size()) && grid[newY] & mask))
             {
                 downPossible = false;
                 break;
@@ -168,7 +164,15 @@ int main(int, char *argv[])
         else
         {
             for (auto const &p : currentForm.points)
-                grid.insert({pointToString({p.x + currentFormPosition.x, p.y + currentFormPosition.y}), content::ROCK});
+            {
+                int x = currentFormPosition.x + p.x;
+                int y = currentFormPosition.y + p.y;
+
+                while (y >= static_cast<int>(grid.size()))
+                    grid.push_back(0);
+
+                grid[y] |= (1 << x);
+            }
 
             auto tmp = currentFormPosition.y + currentForm.height;
             if (tmp > maxY)
