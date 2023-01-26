@@ -9,13 +9,13 @@ struct point
     int y = 0;
 };
 
-struct couple
+struct sensor
 {
-    point sensor;
-    point beacon;
+    point position;
+    int distance;
 };
 
-std::vector<couple> couples;
+std::vector<sensor> sensors;
 
 int main(int, char *argv[])
 {
@@ -26,49 +26,48 @@ int main(int, char *argv[])
 
     while (std::getline(input, line))
     {
-        point sensor, beacon;
-        std::sscanf(line.c_str(), "Sensor at x=%d, y=%d: closest beacon is at x=%d, y=%d", &sensor.x, &sensor.y, &beacon.x, &beacon.y);
-        couples.push_back({sensor, beacon});
+        sensor s;
+        point b;
+        std::sscanf(line.c_str(), "Sensor at x=%d, y=%d: closest beacon is at x=%d, y=%d", &s.position.x, &s.position.y, &b.x, &b.y);
+        s.distance = std::abs(s.position.x - b.x) + std::abs(s.position.y - b.y);
+        sensors.push_back(s);
     }
 
-    bool found = false;
-    point p;
-    for (int y = 0; y < max; y++)
+    int vx[] = {1, 1, -1, -1};
+    int vy[] = {1, -1, 1, -1};
+
+    /* The beacon needs to be on the outside (distance + 1) of one of the sensors. */
+    for (auto const &s1 : sensors)
     {
-        for (int x = 0; x < max; x++)
+        int distance = s1.distance;
+        for (int dx = 0; dx < distance + 2; dx++)
         {
-            std::printf("%d,%d\n", x, y);
-            bool hit = false;
-            for (auto const &c : couples)
+            int dy = (distance + 1) - dx;
+
+            for (int i = 0; i < 4; i++)
             {
-                if ((c.sensor.x == x && c.sensor.y == y) || (c.beacon.x == x && c.beacon.y == y))
+                int x = s1.position.x + dx * vx[i];
+                int y = s1.position.y + dy * vy[i];
+
+                if (x < 0 || x > max || y < 0 || y > max)
+                    continue;
+
+                bool overlap = false;
+                for (auto const &s2 : sensors)
                 {
-                    hit = true;
-                    break;
+                    auto distance = std::abs(s2.position.x - x) + std::abs(s2.position.y - y);
+                    if (s2.distance >= distance)
+                        overlap = true;
                 }
 
-                auto distance = std::abs(c.sensor.x - c.beacon.x) + std::abs(c.sensor.y - c.beacon.y);
-                auto distanceSensor = std::abs(c.sensor.x - x) + std::abs(c.sensor.y - y);
-                if (distanceSensor <= distance)
+                if (!overlap)
                 {
-                    hit = true;
-                    break;
+                    std::printf("%d,%d", x, y);
+                    return 0;
                 }
-            }
-
-            if (!hit)
-            {
-                found = true;
-                p.x = x;
-                p.y = y;
-                break;
             }
         }
-
-        if (found)
-            break;
     }
 
-    std::printf("%d,%d -> %d\n", p.x, p.y, (p.x * max + p.y));
-    return 0;
+    return 1;
 }
